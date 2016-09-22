@@ -14,8 +14,9 @@ object HelloWorld {
   def main(args: Array[String]): Unit = {
     import scalaj.http._
     println("*****************************1-1********************************")
-    println("http://jmgomez:8090/client/user")
-    val originPetition = Http("http://jmgomez:8090/client/user").asString
+    val originLocation: String = "https://gosec02.dev.stratio.com:8443/"
+    println(originLocation)
+    val originPetition = Http(originLocation).option(HttpOptions.allowUnsafeSSL).asString
     val originPetitionCookie = getCookie(originPetition)
     //print(originPetition.body)
     println(originPetition.code)
@@ -25,7 +26,7 @@ object HelloWorld {
     val callBackLocation = originPetition.headers.get("Location").get.head
     println(callBackLocation)
     println(s"Request Cookie $originPetitionCookie")
-    val response2 = Http(callBackLocation).cookie(originPetitionCookie).asString
+    val response2 = Http(callBackLocation).option(HttpOptions.allowUnsafeSSL).cookie(originPetitionCookie).asString
     val callBackCookie: HttpCookie = getCookie(response2)
 
     //print(response2.body)
@@ -37,30 +38,19 @@ object HelloWorld {
     val location2 = response2.headers.get("Location").get.head
     println(location2)
     println(s"No Request Cookie $callBackCookie")
-    val response3 = Http(location2)./*cookie(callBackCookie).*/asString
+    val response3 = Http(location2).option(HttpOptions.allowUnsafeSSL)./*cookie(callBackCookie).*/asString
     val location2BackCookie: HttpCookie = getCookie(response3)
 
     println(response3.code)
-    // print(response3.body)
+   //.  print(response3.body)
     //response3.headers.foreach(println)
 
 
-    println("*****************************1-4********************************")
-    val location3 = response3.headers.get("Location").get.head
-    println(location3)
-    println(location2BackCookie)
-    val response4 = Http(location3).cookie(location2BackCookie).asString
-    println(response4.code)
-    val response4BackCookie: HttpCookie = getCookie(response4)
 
-    //response4.headers.foreach(println)
-
-    val plainCookie2 = originPetition.headers.get("Set-Cookie").get.head.split(";")(0).split("=")
-    val simpleCookie2 = new HttpCookie(plainCookie2(0), plainCookie2(1))
-    val bodyToProcess = response4.body
+    val bodyToProcess = response3.body
     val ltLEftMAtch: String = "name=\"lt\" value=\""
     val lt1 = bodyToProcess.indexOf(ltLEftMAtch)
-    val ltRightMatch: String = "-docker-sso"
+    val ltRightMatch: String = "-gosec05.dev.stratio.com"
     val lt2 = bodyToProcess.indexOf(ltRightMatch)
     val lt = bodyToProcess.substring(lt1+ltLEftMAtch.size,lt2+ltRightMatch.size)
     println(s"LT ${lt}")
@@ -78,14 +68,14 @@ object HelloWorld {
     println("=================================================================================")
     println("*****************************2-1********************************")
 
-    val username: String = "jmgomez"
+    val username: String = "admin"
     val password: String = "1234"
 
-    val location21 = "https://sso.dev.stratio.com:9005/gosec-sso/login?service=https%3A%2F%2Fsso.dev.stratio.com%3A9005%2Fgosec-sso%2Foauth2.0%2FcallbackAuthorize"
+    val location21 = "https://gosec05.dev.stratio.com:9005/gosec-sso/login?service=https://gosec05.dev.stratio.com:9005/gosec-sso/oauth2.0/callbackAuthorize"
     println(location21)
     println(s"Request Cookie $location2BackCookie")
 
-    val response21 = Http(location21).cookie(location2BackCookie).
+    val response21 = Http(location21).option(HttpOptions.allowUnsafeSSL).cookie(location2BackCookie).
       postForm(Seq("lt" -> lt,"_eventId" ->"submit" , "execution" ->execution,
         "submit" -> "LOGIN", "username" -> username, "password" -> password)).asString
     val response21BackCookie: HttpCookie = getCookie(response21)
@@ -102,7 +92,7 @@ object HelloWorld {
      new HttpCookie(split(0), split(1))
     }) :+ location2BackCookie
     println(cookie2)
-    val response22 = Http(location22).cookies(cookie2).asString
+    val response22 = Http(location22).option(HttpOptions.allowUnsafeSSL).cookies(cookie2).asString
   //  print(response22.body)
     println(response22.code)
 //    response22.headers.foreach(println)
@@ -112,11 +102,7 @@ object HelloWorld {
     println(location23)
     println(originPetitionCookie)
 
-    val response23 = Http(location23).cookie(location2BackCookie).cookie(originPetitionCookie).asString
-      print(response23.body)
-        println(response23.code)
-    response23.headers.foreach(println)
-
+    val response23 = Http(location23).option(HttpOptions.allowUnsafeSSL).cookie(location2BackCookie).cookie(originPetitionCookie).asString
 
 
 
